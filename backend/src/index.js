@@ -2,7 +2,7 @@
 
 const app = require('./app')
 const mongoose = require("mongoose");
-let port = process.env.PORT || '3000'
+let port = process.env.PORT || 3000
 require('dotenv/config');
 
 const db = mongoose.connect(process.env.MONGOATLAS_URL,{ useNewUrlParser: true, useUnifiedTopology: true })
