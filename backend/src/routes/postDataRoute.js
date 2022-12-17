@@ -23,7 +23,7 @@ postRoute.use(cors());
 
 postRoute.get('/PostView', async (req,res) => {
     try{
-        let found = await PostModel.find()
+        let found = await PostModel.find()sort({Date:-1});
         res.json(found)
     } catch(err) {
         res.json({
