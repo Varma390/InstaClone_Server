@@ -1,21 +1,25 @@
 const postRoute = require('express').Router()
 const PostModel = require('../models/postDataModal')
 const bodyParser = require('body-parser')
-const fs = require('fs')
+// const cloudinary = require("../models/cloudinary")
+// const fs = require('fs')
+var cloudinary = require('cloudinary').v2;
 postRoute.use(bodyParser.json())
+const dotenv = require('dotenv');
+dotenv.config();
+cloudinary.config({ 
+    cloud_name: process.env.CLOUD, 
+    api_key: process.env.API_KEY, 
+    api_secret: process.env.API_SECRET,
+    secure: true
+  });
 const cors = require("cors");
 postRoute.use(cors());
-const multer = require("multer")
+// const multer = require("multer")
 // for storing files
-const ownStorage = multer.diskStorage({
-    destination: (req,file,cb) => {
-        cb(null,  "local_folder/files" );
-    },
-    filename: (req,file,cb) => {
-        cb(null, file.originalname)
-    }
-})
-const upload = multer({storage:ownStorage})
+
+// const upload1 = multer({storage:multer.diskStorage({
+// })})
 
 postRoute.get('/PostView', async (req,res) => {
     try{
@@ -27,21 +31,30 @@ postRoute.get('/PostView', async (req,res) => {
         })
     }
 })
-postRoute.post('/PostData',upload.single("imageData1"), async (req,res) => {
+postRoute.post('/PostData', async (req,res) => {
+    console.log(req.body)
     try{
-
+        console.log('before');
+        const uploadedImage = await cloudinary.uploader.upload(req.body.imagefile,{
+            upload_preset: 'images'
+        })
+        // const uploadedImage = await cloudinary.uploader.upload(req.body.imagefile)
+        // const upload = await cloudinary.v2.upload1.upload(req.file.path);
+        console.log(uploadedImage);
+        
         let obj = {
-            name : req.body.author1,
-            description : req.body.description1,
-            location : req.body.location1,
-            PostImage : {
-                data: fs.readFileSync('local_folder/files/' + req.file.filename),
-                contentType: 'image/png'
-            }
+            file: uploadedImage.secure_url,
+            // file: uploadedImage.url,
+
+            name : req.body.name,
+            description : req.body.description,
+            location : req.body.location,
         }
+        console.log(obj)
+        console.log('AFTER')
 
         await PostModel.create(obj)
-        .then(res => console.log("successful"))
+        .then(res => console.log(res))
         .catch(err => console.log(err))
 
         res.status(200).json({
@@ -56,4 +69,33 @@ postRoute.post('/PostData',upload.single("imageData1"), async (req,res) => {
         })
     }
 })
+// postRoute.post('/PostData',upload.single("imageData1"), async (req,res) => {
+//     try{
+
+//         let obj = {
+//             name : req.body.author1,
+//             description : req.body.description1,
+//             location : req.body.location1,
+//             PostImage : {
+//                 data: fs.readFileSync('local_folder/files/' + req.file.filename),
+//                 contentType: 'image/png'
+//             }
+//         }
+
+//         await PostModel.create(obj)
+//         .then(res => console.log("successful"))
+//         .catch(err => console.log(err))
+
+//         res.status(200).json({
+//             result : "success",
+//             frontEndMessage : req.body,
+//             addedData : obj
+//         })
+//     } catch(err) {
+//         res.status(400).json({
+//             result : "failure",
+//             message: err.message
+//         })
+//     }
+// })
 module.exports = postRoute;

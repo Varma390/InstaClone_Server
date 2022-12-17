@@ -3,7 +3,8 @@ const app = express()
 // Parse JSON bodies (as sent by API clients)
 //  We are using express.json() middleware to handle JSON data.
 app.use(express.json());
-
+// const cors = require("cors");
+// app.use(cors());
 //Import all routes present in routes folder
 const Route = require('./routes/postDataRoute')
 app.use('/', Route)

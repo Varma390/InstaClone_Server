@@ -1,14 +1,15 @@
 const mongoose = require("mongoose");
 
 const postSchema = new mongoose.Schema({
+    file:{type: String},
     name:{ type: String } ,
     location: { type: String } ,
     description: { type: String } ,
-    PostImage:
-    {
-        data: Buffer,
-        contentType: String
-    },
+    // PostImage:
+    // {
+    //     data: Buffer,
+    //     contentType: String
+    // },
     date: { type: String, default: new Date().toLocaleDateString(
         'en-gb',
         {
@@ -22,6 +23,6 @@ const postSchema = new mongoose.Schema({
 
 
 const PostModel = mongoose.model('posts',postSchema);
-PostModel.createCollection();
+// PostModel.createCollection();
 
 module.exports = PostModel;
