@@ -19,7 +19,6 @@ const upload = multer({storage:ownStorage})
 
 postRoute.get('/PostView', async (req,res) => {
     try{
-
         let found = await PostModel.find()
         res.json(found)
     } catch(err) {
@@ -38,18 +37,17 @@ postRoute.post('/PostData',upload.single("imageData1"), async (req,res) => {
             PostImage : {
                 data: fs.readFileSync('local_folder/files/' + req.file.filename),
                 contentType: 'image/png'
-            } 
+            }
         }
 
         await PostModel.create(obj)
         .then(res => console.log("successful"))
         .catch(err => console.log(err))
 
-
         res.status(200).json({
             result : "success",
             frontEndMessage : req.body,
-            backEndMessage : obj
+            addedData : obj
         })
     } catch(err) {
         res.status(400).json({

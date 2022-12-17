@@ -1,8 +1,4 @@
 const mongoose = require("mongoose");
-const date = require('date-and-time');
-
-const now = new Date();
-const pattern = date.compile('ddd, MMM DD YYYY');
 
 const postSchema = new mongoose.Schema({
     name:{ type: String } ,
@@ -13,10 +9,15 @@ const postSchema = new mongoose.Schema({
         data: Buffer,
         contentType: String
     },
-    // date: { type: Date, default: moment().format("MMM Do YYYY") }
-    date: { type: Date, default: date.format(now, pattern)   }
-
-
+    date: { type: String, default: new Date().toLocaleDateString(
+        'en-gb',
+        {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+          timeZone: 'utc'
+        }
+      )  }
 })
 
 
