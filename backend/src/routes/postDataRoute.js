@@ -33,7 +33,7 @@ const upload = multer({storage:ownStorage})
 
 postRoute.get('/PostView', async (req,res) => {
     try{
-        let found = await PostModel.find().sort({order:-1});
+let found = await PostModel.find().sort({order:-1});
         res.json(found)
     } catch(err) {
         res.json({
