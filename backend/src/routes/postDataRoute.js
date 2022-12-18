@@ -15,15 +15,25 @@ cloudinary.config({
   });
 const cors = require("cors");
 postRoute.use(cors());
-// const multer = require("multer")
-// for storing files
+const multer = require("multer")
+// // for storing files
 
-// const upload1 = multer({storage:multer.diskStorage({
+// const upload = multer({storage:multer.diskStorage({
 // })})
+
+const ownStorage = multer.diskStorage({
+    // destination: (req,file,cb) => {
+    //     cb(null,  "local_folder/files" );
+    // },
+    filename: (req,file,cb) => {
+        cb(null, file.originalname)
+    }
+})
+const upload = multer({storage:ownStorage})
 
 postRoute.get('/PostView', async (req,res) => {
     try{
-        let found = await PostModel.find()
+        let found = await PostModel.find().sort({order:-1});
         res.json(found)
     } catch(err) {
         res.json({
@@ -31,24 +41,25 @@ postRoute.get('/PostView', async (req,res) => {
         })
     }
 })
-postRoute.post('/PostData', async (req,res) => {
-    console.log(req.body)
+postRoute.post('/PostData',upload.single('imageData1'), async (req,res) => {
+    console.log(req.body,req.file)
     try{
         console.log('before');
-        const uploadedImage = await cloudinary.uploader.upload(req.body.imagefile,{
+        const uploadedImage = await cloudinary.uploader.upload(req.file.path,{
             upload_preset: 'images'
         })
         // const uploadedImage = await cloudinary.uploader.upload(req.body.imagefile)
         // const upload = await cloudinary.v2.upload1.upload(req.file.path);
-        console.log(uploadedImage);
+        // console.log(uploadedImage);
         
         let obj = {
             file: uploadedImage.secure_url,
             // file: uploadedImage.url,
 
-            name : req.body.name,
-            description : req.body.description,
-            location : req.body.location,
+            name : req.body.author1,
+            description : req.body.description1,
+            location : req.body.location1,
+            order: Date.now()
         }
         console.log(obj)
         console.log('AFTER')
@@ -61,6 +72,7 @@ postRoute.post('/PostData', async (req,res) => {
             result : "success",
             frontEndMessage : req.body,
             addedData : obj
+
         })
     } catch(err) {
         res.status(400).json({

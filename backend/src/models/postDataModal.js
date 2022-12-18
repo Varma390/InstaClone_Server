@@ -10,6 +10,7 @@ const postSchema = new mongoose.Schema({
     //     data: Buffer,
     //     contentType: String
     // },
+    order:{type:Date},
     date: { type: String, default: new Date().toLocaleDateString(
         'en-gb',
         {
